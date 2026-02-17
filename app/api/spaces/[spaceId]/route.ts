@@ -94,3 +94,21 @@ export async function PATCH(
   }
 }
 
+export async function DELETE(
+  _request: Request,
+  context: { params: { spaceId: string } },
+): Promise<NextResponse> {
+  try {
+    const supabase = createSupabaseServerClient();
+    const { error } = await supabase.from("spaces").delete().eq("id", context.params.spaceId);
+
+    if (error) {
+      return NextResponse.json({ error: error.message }, { status: 500 });
+    }
+
+    return NextResponse.json({ ok: true });
+  } catch (error) {
+    return NextResponse.json({ error: (error as Error).message }, { status: 500 });
+  }
+}
+

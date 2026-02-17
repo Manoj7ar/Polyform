@@ -9,6 +9,12 @@ interface LanguageModalProps {
   onChange: (value: string) => void;
   onNameChange: (value: string) => void;
   onConfirm: () => void;
+  copy?: {
+    title: string;
+    subtitle: string;
+    namePlaceholder: string;
+    enterSpace: string;
+  };
 }
 
 export function LanguageModal({
@@ -18,19 +24,27 @@ export function LanguageModal({
   onChange,
   onNameChange,
   onConfirm,
+  copy,
 }: LanguageModalProps): JSX.Element | null {
   if (!isOpen) return null;
+
+  const text = copy ?? {
+    title: "Choose your working language",
+    subtitle: "You can change this anytime in the top bar.",
+    namePlaceholder: "Your name",
+    enterSpace: "Enter Space",
+  };
 
   return (
     <div className="fixed inset-0 z-50 grid place-items-center bg-slate-900/35 p-4">
       <div className="w-full max-w-md rounded-2xl border border-[var(--border)] bg-white p-6 shadow-xl">
-        <h2 className="text-lg font-semibold text-slate-900">Choose your working language</h2>
-        <p className="mt-1 text-sm text-slate-600">You can change this anytime in the top bar.</p>
+        <h2 className="text-lg font-semibold text-slate-900">{text.title}</h2>
+        <p className="mt-1 text-sm text-slate-600">{text.subtitle}</p>
 
         <input
           value={name}
           onChange={(event) => onNameChange(event.target.value)}
-          placeholder="Your name"
+          placeholder={text.namePlaceholder}
           className="mt-4 w-full rounded-lg border border-slate-300 px-3 py-2 text-sm outline-none"
         />
 
@@ -51,7 +65,7 @@ export function LanguageModal({
           onClick={onConfirm}
           className="mt-4 w-full rounded-lg bg-blue-600 px-4 py-2 text-sm font-semibold text-white"
         >
-          Enter Space
+          {text.enterSpace}
         </button>
       </div>
     </div>

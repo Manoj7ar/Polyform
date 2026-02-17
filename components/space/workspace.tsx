@@ -1,7 +1,7 @@
 ﻿"use client";
 
 import Link from "next/link";
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 
 import { DocumentBlock, type DocumentContent } from "@/components/blocks";
 import { PolyformLogoBadge } from "@/components/brand/polyform-logo";
@@ -158,6 +158,181 @@ const DEFAULT_DOCUMENT_FORMAT: Omit<DocumentFormatState, "fontFamily"> = {
   textType: "normal",
 };
 
+interface WorkspaceUiText {
+  loadingDocument: string;
+  namePlaceholder: string;
+  share: string;
+  back: string;
+  undo: string;
+  redo: string;
+  print: string;
+  zoom: string;
+  normalText: string;
+  resetTextStyle: string;
+  fontFamily: string;
+  increaseFontSize: string;
+  bold: string;
+  italic: string;
+  underline: string;
+  align: string;
+  list: string;
+  numberedList: string;
+  editing: string;
+  translating: string;
+  synced: string;
+  focusEnable: string;
+  focusDisable: string;
+  words: string;
+  chars: string;
+  minRead: string;
+  writeWithPolly: string;
+  close: string;
+  askPolly: string;
+  stopSpeechInput: string;
+  startSpeechInput: string;
+  speechAlreadyActive: string;
+  send: string;
+  speechUnavailable: string;
+  heading: string;
+  meetingNotes: string;
+  checklist: string;
+  pollyReady: string;
+  languageModal: {
+    title: string;
+    subtitle: string;
+    namePlaceholder: string;
+    enterSpace: string;
+  };
+  shareModal: {
+    title: string;
+    close: string;
+    liveEdit: string;
+    viewOnly: string;
+    snapshot: string;
+    generating: string;
+  };
+}
+
+const DEFAULT_UI_TEXT: WorkspaceUiText = {
+  loadingDocument: "Loading document...",
+  namePlaceholder: "Name",
+  share: "Share",
+  back: "Back",
+  undo: "Undo",
+  redo: "Redo",
+  print: "Print",
+  zoom: "Zoom",
+  normalText: "Normal text",
+  resetTextStyle: "Reset text style",
+  fontFamily: "Font family",
+  increaseFontSize: "Increase font size",
+  bold: "Bold",
+  italic: "Italic",
+  underline: "Underline",
+  align: "Align",
+  list: "List",
+  numberedList: "1.",
+  editing: "Editing",
+  translating: "Translating...",
+  synced: "Synced",
+  focusEnable: "Enable focus mode",
+  focusDisable: "Disable focus mode",
+  words: "words",
+  chars: "chars",
+  minRead: "min read",
+  writeWithPolly: "Write with Polly",
+  close: "Close",
+  askPolly: "Ask Polly...",
+  stopSpeechInput: "Stop speech input",
+  startSpeechInput: "Start speech input",
+  speechAlreadyActive: "Speech input is already active.",
+  send: "Send",
+  speechUnavailable: "Speech input is unavailable in this browser.",
+  heading: "Heading",
+  meetingNotes: "Meeting Notes",
+  checklist: "Checklist",
+  pollyReady: "Write with Polly is ready. Ask for a summary, rewrite, or outline.",
+  languageModal: {
+    title: "Choose your working language",
+    subtitle: "You can change this anytime in the top bar.",
+    namePlaceholder: "Your name",
+    enterSpace: "Enter Space",
+  },
+  shareModal: {
+    title: "Share Space",
+    close: "Close",
+    liveEdit: "Live Edit",
+    viewOnly: "View Only",
+    snapshot: "Snapshot",
+    generating: "Generating...",
+  },
+};
+
+function readLocalizedText(candidate: unknown, fallback: string): string {
+  return typeof candidate === "string" && candidate.trim().length > 0 ? candidate : fallback;
+}
+
+function resolveWorkspaceUiText(candidate: unknown): WorkspaceUiText {
+  const value = candidate && typeof candidate === "object" ? (candidate as Record<string, unknown>) : {};
+  const languageModal = value.languageModal && typeof value.languageModal === "object" ? (value.languageModal as Record<string, unknown>) : {};
+  const shareModal = value.shareModal && typeof value.shareModal === "object" ? (value.shareModal as Record<string, unknown>) : {};
+
+  return {
+    loadingDocument: readLocalizedText(value.loadingDocument, DEFAULT_UI_TEXT.loadingDocument),
+    namePlaceholder: readLocalizedText(value.namePlaceholder, DEFAULT_UI_TEXT.namePlaceholder),
+    share: readLocalizedText(value.share, DEFAULT_UI_TEXT.share),
+    back: readLocalizedText(value.back, DEFAULT_UI_TEXT.back),
+    undo: readLocalizedText(value.undo, DEFAULT_UI_TEXT.undo),
+    redo: readLocalizedText(value.redo, DEFAULT_UI_TEXT.redo),
+    print: readLocalizedText(value.print, DEFAULT_UI_TEXT.print),
+    zoom: readLocalizedText(value.zoom, DEFAULT_UI_TEXT.zoom),
+    normalText: readLocalizedText(value.normalText, DEFAULT_UI_TEXT.normalText),
+    resetTextStyle: readLocalizedText(value.resetTextStyle, DEFAULT_UI_TEXT.resetTextStyle),
+    fontFamily: readLocalizedText(value.fontFamily, DEFAULT_UI_TEXT.fontFamily),
+    increaseFontSize: readLocalizedText(value.increaseFontSize, DEFAULT_UI_TEXT.increaseFontSize),
+    bold: readLocalizedText(value.bold, DEFAULT_UI_TEXT.bold),
+    italic: readLocalizedText(value.italic, DEFAULT_UI_TEXT.italic),
+    underline: readLocalizedText(value.underline, DEFAULT_UI_TEXT.underline),
+    align: readLocalizedText(value.align, DEFAULT_UI_TEXT.align),
+    list: readLocalizedText(value.list, DEFAULT_UI_TEXT.list),
+    numberedList: readLocalizedText(value.numberedList, DEFAULT_UI_TEXT.numberedList),
+    editing: readLocalizedText(value.editing, DEFAULT_UI_TEXT.editing),
+    translating: readLocalizedText(value.translating, DEFAULT_UI_TEXT.translating),
+    synced: readLocalizedText(value.synced, DEFAULT_UI_TEXT.synced),
+    focusEnable: readLocalizedText(value.focusEnable, DEFAULT_UI_TEXT.focusEnable),
+    focusDisable: readLocalizedText(value.focusDisable, DEFAULT_UI_TEXT.focusDisable),
+    words: readLocalizedText(value.words, DEFAULT_UI_TEXT.words),
+    chars: readLocalizedText(value.chars, DEFAULT_UI_TEXT.chars),
+    minRead: readLocalizedText(value.minRead, DEFAULT_UI_TEXT.minRead),
+    writeWithPolly: readLocalizedText(value.writeWithPolly, DEFAULT_UI_TEXT.writeWithPolly),
+    close: readLocalizedText(value.close, DEFAULT_UI_TEXT.close),
+    askPolly: readLocalizedText(value.askPolly, DEFAULT_UI_TEXT.askPolly),
+    stopSpeechInput: readLocalizedText(value.stopSpeechInput, DEFAULT_UI_TEXT.stopSpeechInput),
+    startSpeechInput: readLocalizedText(value.startSpeechInput, DEFAULT_UI_TEXT.startSpeechInput),
+    speechAlreadyActive: readLocalizedText(value.speechAlreadyActive, DEFAULT_UI_TEXT.speechAlreadyActive),
+    send: readLocalizedText(value.send, DEFAULT_UI_TEXT.send),
+    speechUnavailable: readLocalizedText(value.speechUnavailable, DEFAULT_UI_TEXT.speechUnavailable),
+    heading: readLocalizedText(value.heading, DEFAULT_UI_TEXT.heading),
+    meetingNotes: readLocalizedText(value.meetingNotes, DEFAULT_UI_TEXT.meetingNotes),
+    checklist: readLocalizedText(value.checklist, DEFAULT_UI_TEXT.checklist),
+    pollyReady: readLocalizedText(value.pollyReady, DEFAULT_UI_TEXT.pollyReady),
+    languageModal: {
+      title: readLocalizedText(languageModal.title, DEFAULT_UI_TEXT.languageModal.title),
+      subtitle: readLocalizedText(languageModal.subtitle, DEFAULT_UI_TEXT.languageModal.subtitle),
+      namePlaceholder: readLocalizedText(languageModal.namePlaceholder, DEFAULT_UI_TEXT.languageModal.namePlaceholder),
+      enterSpace: readLocalizedText(languageModal.enterSpace, DEFAULT_UI_TEXT.languageModal.enterSpace),
+    },
+    shareModal: {
+      title: readLocalizedText(shareModal.title, DEFAULT_UI_TEXT.shareModal.title),
+      close: readLocalizedText(shareModal.close, DEFAULT_UI_TEXT.shareModal.close),
+      liveEdit: readLocalizedText(shareModal.liveEdit, DEFAULT_UI_TEXT.shareModal.liveEdit),
+      viewOnly: readLocalizedText(shareModal.viewOnly, DEFAULT_UI_TEXT.shareModal.viewOnly),
+      snapshot: readLocalizedText(shareModal.snapshot, DEFAULT_UI_TEXT.shareModal.snapshot),
+      generating: readLocalizedText(shareModal.generating, DEFAULT_UI_TEXT.shareModal.generating),
+    },
+  };
+}
+
 function normalizeDocumentFormat(content: DocumentContent, fallbackFont: string): DocumentFormatState {
   const format = content.format ?? {};
   return {
@@ -242,13 +417,13 @@ export function Workspace({ spaceId, mode = "edit", snapshotId, shareToken }: Wo
   const [pollySpeechError, setPollySpeechError] = useState<string | null>(null);
   const [pollyInterim, setPollyInterim] = useState("");
   const [pollyDrafting, setPollyDrafting] = useState(false);
-  const [pollyMessages, setPollyMessages] = useState<PollyMessage[]>([
-    { role: "assistant", text: "Write with Polly is ready. Ask for a summary, rewrite, or outline." },
-  ]);
+  const [pollyMessages, setPollyMessages] = useState<PollyMessage[]>([{ role: "assistant", text: DEFAULT_UI_TEXT.pollyReady }]);
+  const [uiTextByLanguage, setUiTextByLanguage] = useState<Record<string, WorkspaceUiText>>({ en: DEFAULT_UI_TEXT });
   const [error, setError] = useState<string | null>(null);
 
   const effectiveDisplayName = displayName.trim() || "You";
   const readOnly = effectiveMode !== "edit" || Boolean(snapshotId);
+  const uiText = uiTextByLanguage[language] ?? DEFAULT_UI_TEXT;
 
   const sessionIdRef = useRef<string>("");
   const roomClientRef = useRef<SupabaseRoomClient | null>(null);
@@ -285,6 +460,49 @@ export function Workspace({ spaceId, mode = "edit", snapshotId, shareToken }: Wo
     }
     setLanguageModalOpen(!fromStorage || !savedName);
   }, []);
+
+  useEffect(() => {
+    if (language === "en" || uiTextByLanguage[language]) return;
+
+    let cancelled = false;
+
+    async function localizeUi(): Promise<void> {
+      try {
+        const response = await fetch("/api/ui-localize", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            targetLang: language,
+            texts: DEFAULT_UI_TEXT,
+          }),
+        });
+        const data = await response.json();
+        if (!response.ok) throw new Error(data.error ?? "Failed to localize workspace UI");
+        if (cancelled) return;
+
+        const localized = resolveWorkspaceUiText(data.texts);
+        setUiTextByLanguage((current) => ({ ...current, [language]: localized }));
+      } catch {
+        if (cancelled) return;
+        setUiTextByLanguage((current) => ({ ...current, [language]: DEFAULT_UI_TEXT }));
+      }
+    }
+
+    void localizeUi();
+
+    return () => {
+      cancelled = true;
+    };
+  }, [language, uiTextByLanguage]);
+
+  useEffect(() => {
+    setPollyMessages((current) => {
+      if (current.length === 1 && current[0]?.role === "assistant" && current[0].text !== uiText.pollyReady) {
+        return [{ role: "assistant", text: uiText.pollyReady }];
+      }
+      return current;
+    });
+  }, [uiText.pollyReady]);
 
   useEffect(() => {
     return () => {
@@ -490,8 +708,8 @@ export function Workspace({ spaceId, mode = "edit", snapshotId, shareToken }: Wo
     return applyTranslatedUnits(block.type, sourceContent, translated.texts) as BlockContent;
   }
 
-  async function runTranslation(block: BlockRow, sourceContent: BlockContent): Promise<void> {
-    if (block.universal || readOnly) return;
+  const runTranslation = useCallback(async (block: BlockRow, sourceContent: BlockContent): Promise<void> => {
+    if (block.universal) return;
 
     const texts = extractTranslatableUnits(block.type, sourceContent);
     if (texts.length === 0) return;
@@ -549,7 +767,19 @@ export function Workspace({ spaceId, mode = "edit", snapshotId, shareToken }: Wo
     } finally {
       setTranslationPending((current) => ({ ...current, [block.id]: false }));
     }
-  }
+  }, [spaceId, targetLanguages]);
+
+  useEffect(() => {
+    if (!activeBlock) return;
+    if (activeBlock.universal || language === activeBlock.source_language) return;
+    if (translationPending[activeBlock.id]) return;
+
+    const translated = translations[activeBlock.id]?.[language];
+    if (translated && translated.translationVersion >= activeBlock.translation_version) return;
+
+    const sourceContent = sourceById[activeBlock.id] ?? activeBlock.source_content;
+    void runTranslation(activeBlock, sourceContent);
+  }, [activeBlock, language, runTranslation, sourceById, translationPending, translations]);
 
   function scheduleTranslation(block: BlockRow, sourceContent: BlockContent): void {
     if (translationTimersRef.current[block.id]) clearTimeout(translationTimersRef.current[block.id]);
@@ -812,7 +1042,7 @@ export function Workspace({ spaceId, mode = "edit", snapshotId, shareToken }: Wo
 
   function togglePollyListening(): void {
     if (!pollySpeechSupported) {
-      setPollySpeechError("Speech input is not supported in this browser.");
+      setPollySpeechError(uiText.speechUnavailable);
       return;
     }
 
@@ -829,7 +1059,7 @@ export function Workspace({ spaceId, mode = "edit", snapshotId, shareToken }: Wo
     try {
       recognition.start();
     } catch {
-      setPollySpeechError("Speech input is already active.");
+      setPollySpeechError(uiText.speechAlreadyActive);
     }
   }
 
@@ -844,7 +1074,7 @@ export function Workspace({ spaceId, mode = "edit", snapshotId, shareToken }: Wo
   if (!space || !activeBlock) {
     return (
       <main className="grid min-h-screen place-items-center px-6">
-        <div className="rounded-xl border border-slate-200 bg-white px-4 py-3 text-sm text-slate-600">Loading document...</div>
+        <div className="rounded-xl border border-slate-200 bg-white px-4 py-3 text-sm text-slate-600">{uiText.loadingDocument}</div>
       </main>
     );
   }
@@ -871,9 +1101,17 @@ export function Workspace({ spaceId, mode = "edit", snapshotId, shareToken }: Wo
           window.localStorage.setItem("polyform-name", effectiveDisplayName);
           setLanguageModalOpen(false);
         }}
+        copy={uiText.languageModal}
       />
 
-      <ShareModal isOpen={shareModalOpen} onClose={() => setShareModalOpen(false)} editLink={editLink} viewLink={viewLink} snapshotLink={snapshotLink} />
+      <ShareModal
+        isOpen={shareModalOpen}
+        onClose={() => setShareModalOpen(false)}
+        editLink={editLink}
+        viewLink={viewLink}
+        snapshotLink={snapshotLink}
+        copy={uiText.shareModal}
+      />
 
       <div className="flex h-full flex-col px-2 pb-2 pt-1">
         <header className="sticky top-2 z-30 mx-auto w-full max-w-[1360px] rounded-[20px] border border-white/70 bg-white/35 shadow-[0_14px_36px_rgba(15,23,42,0.14)] backdrop-blur-2xl">
@@ -907,7 +1145,7 @@ export function Workspace({ spaceId, mode = "edit", snapshotId, shareToken }: Wo
                   window.localStorage.setItem("polyform-name", next.trim() || "You");
                 }}
                 className="w-28 rounded-lg border border-white/80 bg-white/70 px-2 py-1 text-xs backdrop-blur"
-                placeholder="Name"
+                placeholder={uiText.namePlaceholder}
               />
               <select
                 value={language}
@@ -929,18 +1167,18 @@ export function Workspace({ spaceId, mode = "edit", snapshotId, shareToken }: Wo
                 onClick={() => void buildShareLinks()}
                 className="rounded-full border border-[#8bc4ff] bg-[#c2e7ff]/90 px-5 py-2 text-sm font-semibold text-[#001d35] shadow-[0_1px_0_rgba(255,255,255,0.8)]"
               >
-                Share
+                {uiText.share}
               </button>
               <Link href="/app" className="rounded-lg px-2 py-1 text-xs text-[#5f6368] hover:bg-white/70">
-                Back
+                {uiText.back}
               </Link>
             </div>
           </div>
 
           <div className="mx-2 mb-2 flex items-center gap-1 rounded-2xl border border-white/80 bg-white/55 px-3 py-1.5 shadow-[inset_0_1px_0_rgba(255,255,255,0.7)] backdrop-blur-md">
-            <ToolbarIcon label="Undo" onClick={handleUndo} disabled={readOnly || historyCounts.undo === 0} />
-            <ToolbarIcon label="Redo" onClick={handleRedo} disabled={readOnly || historyCounts.redo === 0} />
-            <ToolbarIcon label="Print" onClick={() => window.print()} />
+            <ToolbarIcon label={uiText.undo} onClick={handleUndo} disabled={readOnly || historyCounts.undo === 0} />
+            <ToolbarIcon label={uiText.redo} onClick={handleRedo} disabled={readOnly || historyCounts.redo === 0} />
+            <ToolbarIcon label={uiText.print} onClick={() => window.print()} />
             <span className="mx-2 h-5 w-px bg-[#dadce0]" />
             <select
               value={Math.round(documentFormat.zoom * 100)}
@@ -949,7 +1187,7 @@ export function Workspace({ spaceId, mode = "edit", snapshotId, shareToken }: Wo
                 updateDocumentFormat({ zoom: percent / 100 });
               }}
               className="rounded-lg border border-transparent bg-transparent px-2 py-1 text-[13px] text-[#3c4043] outline-none transition hover:border-white/70 hover:bg-white/70"
-              title="Zoom"
+              title={uiText.zoom}
               disabled={readOnly}
             >
               {[50, 75, 90, 100, 110, 125, 150, 175, 200].map((percent) => (
@@ -959,8 +1197,8 @@ export function Workspace({ spaceId, mode = "edit", snapshotId, shareToken }: Wo
               ))}
             </select>
             <ToolbarIcon
-              label="Normal text"
-              title="Reset text style"
+              label={uiText.normalText}
+              title={uiText.resetTextStyle}
               onClick={() =>
                 updateDocumentFormat({
                   textType: "normal",
@@ -983,7 +1221,7 @@ export function Workspace({ spaceId, mode = "edit", snapshotId, shareToken }: Wo
                 updateDocumentFormat({ fontFamily: next });
               }}
               className="rounded-lg border border-transparent bg-transparent px-2 py-1 text-[13px] text-[#3c4043] outline-none transition hover:border-white/70 hover:bg-white/70"
-              title="Font family"
+              title={uiText.fontFamily}
               disabled={readOnly}
             >
               {FONT_OPTIONS.map((font) => (
@@ -994,39 +1232,39 @@ export function Workspace({ spaceId, mode = "edit", snapshotId, shareToken }: Wo
             </select>
             <ToolbarIcon
               label={String(documentFormat.fontSize)}
-              title="Increase font size"
+              title={uiText.increaseFontSize}
               onClick={() => updateDocumentFormat({ fontSize: Math.min(72, documentFormat.fontSize + 1) })}
               disabled={readOnly}
             />
             <ToolbarIcon
               label="B"
-              title="Bold"
+              title={uiText.bold}
               onClick={() => updateDocumentFormat({ bold: !documentFormat.bold })}
               active={documentFormat.bold}
               disabled={readOnly}
             />
             <ToolbarIcon
               label="I"
-              title="Italic"
+              title={uiText.italic}
               onClick={() => updateDocumentFormat({ italic: !documentFormat.italic })}
               active={documentFormat.italic}
               disabled={readOnly}
             />
             <ToolbarIcon
               label="U"
-              title="Underline"
+              title={uiText.underline}
               onClick={() => updateDocumentFormat({ underline: !documentFormat.underline })}
               active={documentFormat.underline}
               disabled={readOnly}
             />
             <ToolbarIcon label="A" />
-            <ToolbarIcon label="Align" />
-            <ToolbarIcon label="List" />
-            <ToolbarIcon label="1." />
+            <ToolbarIcon label={uiText.align} />
+            <ToolbarIcon label={uiText.list} />
+            <ToolbarIcon label={uiText.numberedList} />
             <div className="ml-auto flex items-center gap-2 text-xs text-[#5f6368]">
-              <span className="rounded-full border border-white/80 bg-white/70 px-2 py-0.5">Editing</span>
+              <span className="rounded-full border border-white/80 bg-white/70 px-2 py-0.5">{uiText.editing}</span>
               <span className="rounded-full border border-white/80 bg-white/70 px-2 py-0.5">
-                {translationPending[activeBlock.id] ? "Translating..." : "Synced"}
+                {translationPending[activeBlock.id] ? uiText.translating : uiText.synced}
               </span>
             </div>
           </div>
@@ -1075,7 +1313,7 @@ export function Workspace({ spaceId, mode = "edit", snapshotId, shareToken }: Wo
               type="button"
               onClick={() => setFocusMode((current) => !current)}
               aria-pressed={focusMode}
-              title={focusMode ? "Disable focus mode" : "Enable focus mode"}
+              title={focusMode ? uiText.focusDisable : uiText.focusEnable}
               className={`grid h-10 w-10 place-items-center rounded-full border shadow-[0_10px_24px_rgba(0,0,0,0.18)] backdrop-blur-xl transition ${
                 focusMode
                   ? "border-[#9ec6ff] bg-[#e8f1ff] text-[#174ea6]"
@@ -1091,9 +1329,9 @@ export function Workspace({ spaceId, mode = "edit", snapshotId, shareToken }: Wo
             style={{ left: "12px" }}
           >
             <div className="pointer-events-auto flex items-center gap-3 rounded-full border border-white/80 bg-white/65 px-4 py-2 text-xs text-[#3c4043] shadow-[0_10px_24px_rgba(0,0,0,0.12)] backdrop-blur-xl">
-              <span className="rounded-full bg-white/75 px-2 py-0.5 font-medium">{wordCount} words</span>
-              <span className="rounded-full bg-white/75 px-2 py-0.5 font-medium">{characterCount} chars</span>
-              <span className="rounded-full bg-white/75 px-2 py-0.5 font-medium">{readingMinutes} min read</span>
+              <span className="rounded-full bg-white/75 px-2 py-0.5 font-medium">{wordCount} {uiText.words}</span>
+              <span className="rounded-full bg-white/75 px-2 py-0.5 font-medium">{characterCount} {uiText.chars}</span>
+              <span className="rounded-full bg-white/75 px-2 py-0.5 font-medium">{readingMinutes} {uiText.minRead}</span>
             </div>
           </div>
 
@@ -1103,7 +1341,7 @@ export function Workspace({ spaceId, mode = "edit", snapshotId, shareToken }: Wo
                 <div className="flex items-center justify-between border-b border-white/70 px-3 py-2">
                   <div className="flex items-center gap-2">
                     <PolyformLogoBadge className="h-6 w-6 rounded-full" markClassName="h-3.5 w-3.5 text-[#2f3338]" />
-                    <span className="text-xs font-semibold text-[#2f3338]">Write with Polly</span>
+                    <span className="text-xs font-semibold text-[#2f3338]">{uiText.writeWithPolly}</span>
                   </div>
                   <button
                     type="button"
@@ -1115,7 +1353,7 @@ export function Workspace({ spaceId, mode = "edit", snapshotId, shareToken }: Wo
                     }}
                     className="rounded-full px-2 py-0.5 text-xs text-[#5f6368] hover:bg-white/80"
                   >
-                    Close
+                    {uiText.close}
                   </button>
                 </div>
                 <div className="max-h-[180px] space-y-2 overflow-auto px-3 py-2">
@@ -1145,13 +1383,13 @@ export function Workspace({ spaceId, mode = "edit", snapshotId, shareToken }: Wo
                         void submitPollyMessage();
                       }
                     }}
-                    placeholder="Ask Polly..."
+                    placeholder={uiText.askPolly}
                     className="w-full rounded-full border border-white/80 bg-white/85 px-3 py-1.5 text-xs text-[#2f3338] outline-none focus:border-[#9ec6ff]"
                   />
                   <button
                     type="button"
-                    onClick={togglePollyListening}
-                    title={pollyListening ? "Stop speech input" : "Start speech input"}
+                    onClick={() => togglePollyListening()}
+                    title={pollyListening ? uiText.stopSpeechInput : uiText.startSpeechInput}
                     disabled={!pollySpeechSupported}
                     className={`rounded-full border px-2 py-1.5 disabled:cursor-not-allowed disabled:opacity-50 ${
                       pollyListening
@@ -1166,12 +1404,12 @@ export function Workspace({ spaceId, mode = "edit", snapshotId, shareToken }: Wo
                     onClick={() => void submitPollyMessage()}
                     className="rounded-full border border-white/80 bg-white/90 px-3 py-1.5 text-xs font-medium text-[#2f3338] hover:bg-white"
                   >
-                    Send
+                    {uiText.send}
                   </button>
                 </div>
                 {pollySpeechError ? <div className="px-3 pb-2 text-[11px] text-[#b91c1c]">{pollySpeechError}</div> : null}
                 {!pollySpeechSupported ? (
-                  <div className="px-3 pb-2 text-[11px] text-[#6b7280]">Speech input is unavailable in this browser.</div>
+                  <div className="px-3 pb-2 text-[11px] text-[#6b7280]">{uiText.speechUnavailable}</div>
                 ) : null}
               </div>
             </div>
@@ -1193,7 +1431,7 @@ export function Workspace({ spaceId, mode = "edit", snapshotId, shareToken }: Wo
               className="pointer-events-auto inline-flex items-center gap-2 rounded-full border border-white/80 bg-white/75 px-3 py-1.5 text-xs font-medium text-[#2f3338] shadow-[0_10px_24px_rgba(0,0,0,0.18)] backdrop-blur-xl transition hover:bg-white"
             >
               <PolyformLogoBadge className="h-6 w-6 rounded-full" markClassName="h-3.5 w-3.5 text-[#2f3338]" />
-              <span>Write with Polly</span>
+              <span>{uiText.writeWithPolly}</span>
             </button>
           </div>
 
@@ -1208,7 +1446,7 @@ export function Workspace({ spaceId, mode = "edit", snapshotId, shareToken }: Wo
                 disabled={readOnly}
                 className="rounded-full border border-white/70 bg-white/80 px-3 py-1 font-medium hover:bg-white disabled:cursor-not-allowed disabled:opacity-50"
               >
-                Heading
+                {uiText.heading}
               </button>
               <button
                 type="button"
@@ -1216,7 +1454,7 @@ export function Workspace({ spaceId, mode = "edit", snapshotId, shareToken }: Wo
                 disabled={readOnly}
                 className="rounded-full border border-white/70 bg-white/80 px-3 py-1 font-medium hover:bg-white disabled:cursor-not-allowed disabled:opacity-50"
               >
-                Meeting Notes
+                {uiText.meetingNotes}
               </button>
               <button
                 type="button"
@@ -1224,7 +1462,7 @@ export function Workspace({ spaceId, mode = "edit", snapshotId, shareToken }: Wo
                 disabled={readOnly}
                 className="rounded-full border border-white/70 bg-white/80 px-3 py-1 font-medium hover:bg-white disabled:cursor-not-allowed disabled:opacity-50"
               >
-                Checklist
+                {uiText.checklist}
               </button>
             </div>
           </div>
