@@ -12,7 +12,7 @@ export const SUPPORTED_LANGUAGES = [
 ];
 
 export const BLOCK_META: Record<BlockType, { label: string; color: string; bg: string }> = {
-  document: { label: "Google Doc", color: "#2563eb", bg: "#dbeafe" },
+  document: { label: "Polly Doc", color: "#2563eb", bg: "#dbeafe" },
 };
 
 export const BLOCK_ORDER: BlockType[] = ["document"];

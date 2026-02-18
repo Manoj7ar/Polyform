@@ -227,8 +227,8 @@ export function LandingPage(): JSX.Element {
         </svg>
       </div>
 
-      <div className="relative z-10">
-      <header className="sticky top-4 z-30 mx-auto flex w-full max-w-6xl items-center justify-between rounded-[32px] bg-white/26 px-6 py-3 text-slate-900 shadow-[0_18px_40px_rgba(0,0,0,0.14),inset_0_1px_0_rgba(255,255,255,0.55)] backdrop-blur-2xl">
+      <div className="relative z-10 pt-24">
+      <header className="fixed left-1/2 top-4 z-50 flex w-[calc(100%-3rem)] max-w-6xl -translate-x-1/2 items-center justify-between rounded-[32px] bg-white/26 px-6 py-3 text-slate-900 shadow-[0_18px_40px_rgba(0,0,0,0.14),inset_0_1px_0_rgba(255,255,255,0.55)] backdrop-blur-2xl md:w-[calc(100%-5rem)]">
         <div className="flex items-center gap-3">
           <PolyformLogoBadge className="h-9 w-9 rounded-xl bg-white/85" markClassName="h-6 w-6 text-[#2f3338]" title="Polyform logo" />
           <span className="text-lg font-semibold">Polyform</span>
@@ -322,7 +322,7 @@ export function LandingPage(): JSX.Element {
         </div>
       </section>
 
-      <section className="mx-auto mt-10 max-w-6xl rounded-[32px] border border-white/55 bg-white/58 p-8 shadow-[0_14px_30px_rgba(0,0,0,0.1)] backdrop-blur-xl md:p-10">
+      <section className="mx-auto mt-10 max-w-6xl rounded-[32px] bg-white/58 p-8 shadow-[0_14px_30px_rgba(0,0,0,0.1)] backdrop-blur-xl md:p-10">
         <h2 className="text-2xl font-bold text-slate-900 md:text-3xl">{copy.ctaTitle}</h2>
         <p className="mt-4 text-sm leading-7 text-slate-700 md:text-base">{copy.ctaBody}</p>
         <div className="mt-6">

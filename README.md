@@ -5,62 +5,109 @@
 <h1 align="center">Polyform</h1>
 <p align="center"><strong>One workspace. Every language. Zero barriers.</strong></p>
 
-Polyform is a real-time multilingual collaboration workspace built for the lingo.dev hackathon. Teams can write in their own language while everyone else sees live translated content in theirs.
+Polyform is a real-time multilingual collaboration app built for the lingo.dev hackathon. It is currently scoped to a high-quality, Google-Docs-style document workflow with live translation, share links, and realtime presence.
 
-## What Polyform does
-- Real-time shared document editing in a Google-Docs-style A4 flow.
-- Live multilingual rendering per collaborator language.
-- Instant sharing links for edit/view/snapshot flows.
-- Presence cursors with user identity in shared spaces.
-- AI drafting assistant (`Write with Polly`) with voice input and animated insertion into the document.
+## Current scope (hackathon)
+- Document-only collaborative workspace (`Polly Doc`).
+- Source-first translation model powered by lingo.dev.
+- Realtime sync and cursor presence via Supabase Realtime broadcast.
+- Share links for live edit, view-only, and snapshot.
+- AI assistant (`Write with Polly`) with speech input and animated drafting into the doc.
+- Landing + Product + Architecture + Demo marketing pages.
 
-## Core stack
+## Stack
 - Next.js 14 (App Router)
-- Supabase (database, realtime, share/snapshot backing)
-- lingo.dev SDK (translation engine)
-- Tailwind CSS
+- React 18 + Tailwind CSS
+- Supabase (Postgres + Realtime + link/snapshot data)
+- lingo.dev SDK
+- Gemini API (Polly drafting)
+- Upstash Redis (optional translation cache)
 
-## Why lingo.dev is central
-Polyform treats language as infrastructure. The app stores canonical source content once, then localizes outward per active language.
+## lingo.dev integration
+Polyform treats language as infrastructure. The canonical source text is stored once; translated views are derived per language.
 
-### Translation path
-1. Source content changes in a document block.
-2. Change is debounced and sent to `POST /api/translate`.
-3. Server calls lingo.dev using `localizeStringArray`.
-4. Translations are cached and broadcast to clients in the same room.
-5. Each client renders content in its selected language.
+### Content translation flow
+1. User edits source text in the document.
+2. Client debounces changes and calls `POST /api/translate`.
+3. Server uses lingo.dev `localizeStringArray` per active target language.
+4. Results are cached by space/block/version/hash.
+5. Translations broadcast over Supabase Realtime.
+6. Each collaborator sees the doc rendered in their selected language.
 
-### Polly language path
-1. User prompts Polly in chat.
-2. Gemini generates a high-quality draft in English.
-3. If user requested another language (for example German/French), server routes through lingo.dev `localizeText`.
-4. Draft is sanitized and typed into the document with animation.
+### UI localization flow
+1. User selects a language in landing/workspace UI.
+2. Client calls `POST /api/ui-localize` with copy object.
+3. Server uses lingo.dev `localizeObject`.
+4. UI labels, buttons, and helper text update in that language.
 
-## Project structure
-- `app/api/translate/route.ts` translation endpoint (lingo.dev + cache)
-- `app/api/polly/route.ts` AI drafting endpoint (Gemini + lingo.dev translation)
-- `components/space/workspace.tsx` realtime workspace, toolbar, Polly UI, focus mode
-- `components/blocks/document-block.tsx` A4 multi-page document renderer/editor
-- `lib/realtime/supabase-room-client.ts` realtime channel client
-- `supabase/migrations/*` DB schema + realtime setup
+### Polly language flow
+1. User asks Polly in chat.
+2. Gemini generates structured draft text in English.
+3. If another language is requested, server translates the draft with lingo.dev `localizeText`.
+4. Draft is sanitized (removes `**`, `#`, em dash variants) and typed into the document with animation.
+
+## Realtime architecture (Supabase-only)
+- Transport client: `lib/realtime/supabase-room-client.ts`
+- Broadcast events:
+  - `cursor_update`
+  - `block_patch`
+  - `document_update`
+  - `translation_update`
+- Presence payload includes: session id, display name, language, color, cursor position, timestamp.
+- No PartyKit dependency in the current implementation.
+
+## Key routes
+- `app/api/spaces/route.ts` create/list spaces
+- `app/api/spaces/[spaceId]/route.ts` get/update/delete a space
+- `app/api/spaces/[spaceId]/blocks/route.ts` patch blocks
+- `app/api/spaces/[spaceId]/share/route.ts` generate edit/view token links
+- `app/api/spaces/[spaceId]/snapshot/route.ts` create snapshots
+- `app/api/snapshots/[snapshotId]/route.ts` fetch snapshots
+- `app/api/translate/route.ts` lingo.dev document translation
+- `app/api/ui-localize/route.ts` lingo.dev UI localization
+- `app/api/polly/route.ts` Gemini + lingo.dev drafting pipeline
 
 ## Environment variables
-Copy `.env.example` to `.env.local` and fill:
+Copy `.env.example` to `.env.local`:
 
-- `NEXT_PUBLIC_APP_URL`
-- `NEXT_PUBLIC_SUPABASE_URL`
-- `NEXT_PUBLIC_SUPABASE_ANON_KEY`
-- `SUPABASE_SERVICE_ROLE_KEY`
-- `LINGO_API_KEY`
-- `GEMINI_API_KEY` (or `GOOGLE_API_KEY`)
-- `GEMINI_MODEL` (optional override)
-- `UPSTASH_REDIS_REST_URL` (optional cache)
-- `UPSTASH_REDIS_REST_TOKEN` (optional cache)
+```env
+NEXT_PUBLIC_APP_URL=http://localhost:3000
+NEXT_PUBLIC_SUPABASE_URL=
+NEXT_PUBLIC_SUPABASE_ANON_KEY=
+SUPABASE_SERVICE_ROLE_KEY=
+LINGO_API_KEY=
+GEMINI_API_KEY=
+GEMINI_MODEL=gemini-1.5-flash
+UPSTASH_REDIS_REST_URL=
+UPSTASH_REDIS_REST_TOKEN=
+```
 
-## Local setup
+Notes:
+- `LINGODOTDEV_API_KEY` is also accepted as an alias.
+- `GOOGLE_API_KEY` is accepted as an alias for `GEMINI_API_KEY`.
+- Upstash vars are optional.
+
+## Local development
 ```bash
 npm install
 npm run dev
+```
+
+App URLs:
+- Landing: `http://localhost:3000/`
+- Dashboard: `http://localhost:3000/app`
+
+## Database setup (Supabase)
+Run migrations in `supabase/migrations` in order:
+1. `202602170001_init.sql`
+2. `202602170002_enable_realtime.sql`
+3. `202602170003_remove_legacy_blocks.sql`
+4. `202602170004_document_only.sql`
+
+If using Supabase CLI:
+```bash
+supabase link --project-ref <your-project-ref>
+supabase db push
 ```
 
 ## Quality checks
@@ -70,14 +117,26 @@ npm run lint
 npm test
 ```
 
-## Supabase migrations
-Apply migrations in order:
-- `202602170001_init.sql`
-- `202602170002_enable_realtime.sql`
-- `202602170003_remove_legacy_blocks.sql`
-- `202602170004_document_only.sql`
+## Demo script (recommended)
+1. Open one space in two browser windows.
+2. Choose different languages per window.
+3. Type in one window and show translated updates in the other.
+4. Move cursor to show live presence with display name.
+5. Open Share modal and show edit/view/snapshot link generation.
+6. Ask Polly for a draft and show animated insertion into the document.
 
-## Current behavior notes
-- Document pages auto-grow one-by-one (no inner page scrollbar).
-- Polly sanitizes output to avoid `**`, `#`, and em dashes.
-- If Gemini model availability changes, Polly auto-falls back to supported models.
+## Known limits (current build)
+- Supported collaborative block type is currently document only.
+- Mixed-language source detection is basic and not enterprise glossary-aware yet.
+- Realtime depends on Supabase channel reliability and client connection quality.
+
+## Troubleshooting
+- `Missing required env var: NEXT_PUBLIC_SUPABASE_URL`
+  - Add it to `.env.local` and restart dev server.
+- `lingo.dev request failed`
+  - Verify `LINGO_API_KEY` and check API quota/network access.
+- Gemini model not found
+  - Keep `GEMINI_MODEL` default or use a currently listed model; Polly route auto-tries fallback models.
+
+## Security note
+Do not commit real API keys. If secrets were ever exposed, rotate them immediately in Supabase, lingo.dev, and Gemini consoles.
