@@ -135,6 +135,9 @@ const FONT_OPTIONS = [
   "Courier New",
 ] as const;
 
+const PRESENCE_BROADCAST_INTERVAL_MS = 80;
+const TRANSLATION_DEBOUNCE_MS = 180;
+
 interface DocumentFormatState {
   zoom: number;
   fontFamily: string;
@@ -428,6 +431,7 @@ export function Workspace({ spaceId, mode = "edit", snapshotId, shareToken }: Wo
   const sessionIdRef = useRef<string>("");
   const roomClientRef = useRef<SupabaseRoomClient | null>(null);
   const lastPresenceRef = useRef(0);
+  const cursorPositionRef = useRef<{ x: number; y: number }>({ x: 0, y: 0 });
   const saveTimersRef = useRef<Record<string, ReturnType<typeof setTimeout>>>({});
   const translationTimersRef = useRef<Record<string, ReturnType<typeof setTimeout>>>({});
   const undoStackRef = useRef<BlockContent[]>([]);
@@ -443,12 +447,41 @@ export function Workspace({ spaceId, mode = "edit", snapshotId, shareToken }: Wo
 
   const activeBlock = blocks[0] ?? null;
 
+  const broadcastPresence = useCallback(
+    (cursorPosition?: { x: number; y: number }, force = false): void => {
+      if (snapshotId || !roomClientRef.current) return;
+
+      const now = Date.now();
+      if (!force && now - lastPresenceRef.current < PRESENCE_BROADCAST_INTERVAL_MS) return;
+      lastPresenceRef.current = now;
+
+      const nextCursor = cursorPosition ?? cursorPositionRef.current;
+      cursorPositionRef.current = nextCursor;
+
+      roomClientRef.current.broadcastPresence({
+        sessionId: sessionIdRef.current,
+        displayName: effectiveDisplayName,
+        language,
+        color: randomColor(sessionIdRef.current),
+        cursorPosition: nextCursor,
+        lastSeen: now,
+      });
+    },
+    [effectiveDisplayName, language, snapshotId],
+  );
+
   function syncHistoryCounts(): void {
     setHistoryCounts({ undo: undoStackRef.current.length, redo: redoStackRef.current.length });
   }
 
   useEffect(() => {
     sessionIdRef.current = crypto.randomUUID();
+    if (typeof window !== "undefined") {
+      cursorPositionRef.current = {
+        x: Math.round(window.innerWidth / 2),
+        y: Math.round(window.innerHeight / 2),
+      };
+    }
     const fromStorage = window.localStorage.getItem("polyform-language");
     const savedName = window.localStorage.getItem("polyform-name");
     const savedFont = window.localStorage.getItem("polyform-font");
@@ -687,8 +720,12 @@ export function Workspace({ spaceId, mode = "edit", snapshotId, shareToken }: Wo
 
       client.connect();
       roomClientRef.current = client;
+      const initialPresenceTimer = setTimeout(() => {
+        broadcastPresence(undefined, true);
+      }, 140);
 
       return () => {
+        clearTimeout(initialPresenceTimer);
         client.close();
         roomClientRef.current = null;
       };
@@ -696,7 +733,12 @@ export function Workspace({ spaceId, mode = "edit", snapshotId, shareToken }: Wo
       setError((connectionError as Error).message);
       return undefined;
     }
-  }, [effectiveDisplayName, spaceId, language, snapshotId]);
+  }, [broadcastPresence, effectiveDisplayName, spaceId, language, snapshotId]);
+
+  useEffect(() => {
+    if (languageModalOpen) return;
+    broadcastPresence(undefined, true);
+  }, [broadcastPresence, languageModalOpen]);
 
   function displayContent(block: BlockRow): BlockContent {
     const sourceContent = sourceById[block.id] ?? block.source_content;
@@ -785,7 +827,7 @@ export function Workspace({ spaceId, mode = "edit", snapshotId, shareToken }: Wo
     if (translationTimersRef.current[block.id]) clearTimeout(translationTimersRef.current[block.id]);
     translationTimersRef.current[block.id] = setTimeout(() => {
       void runTranslation(block, sourceContent);
-    }, 600);
+    }, TRANSLATION_DEBOUNCE_MS);
   }
 
   function updateBlockContent(
@@ -1273,19 +1315,7 @@ export function Workspace({ spaceId, mode = "edit", snapshotId, shareToken }: Wo
         <section
           className="relative mt-3 min-h-0 flex-1 overflow-auto"
           onMouseMove={(event) => {
-            if (snapshotId || !roomClientRef.current) return;
-            const now = Date.now();
-            if (now - lastPresenceRef.current < 100) return;
-            lastPresenceRef.current = now;
-
-            roomClientRef.current?.broadcastPresence({
-              sessionId: sessionIdRef.current,
-              displayName: effectiveDisplayName,
-              language,
-              color: randomColor(sessionIdRef.current),
-              cursorPosition: { x: event.clientX, y: event.clientY },
-              lastSeen: now,
-            });
+            broadcastPresence({ x: event.clientX, y: event.clientY });
           }}
         >
           <div className="relative z-40 mx-auto my-3 w-[794px]" style={{ zoom: documentFormat.zoom }}>
