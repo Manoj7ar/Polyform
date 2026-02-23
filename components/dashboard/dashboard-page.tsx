@@ -208,11 +208,46 @@ export function DashboardPage(): JSX.Element {
   }, [pinnedSpaces.length, spaces]);
 
   return (
-    <main className="relative min-h-screen overflow-hidden bg-[#e9e7e1] px-6 pb-20 pt-8 md:px-10">
+    <main className="relative min-h-screen overflow-hidden bg-[#d9dde2] px-6 pb-20 pt-8 md:px-10">
       <div aria-hidden className="pointer-events-none absolute inset-0">
-        <div className="absolute left-[8%] top-[-14%] h-[420px] w-[420px] rounded-full bg-[#7dd3fc]/25 blur-3xl" />
-        <div className="absolute right-[-8%] top-[18%] h-[440px] w-[440px] rounded-full bg-[#f97316]/20 blur-3xl" />
-        <div className="absolute bottom-[-18%] left-[26%] h-[460px] w-[460px] rounded-full bg-[#a78bfa]/20 blur-3xl" />
+        <div
+          className="absolute inset-0"
+          style={{
+            background: [
+              "radial-gradient(48% 42% at 18% 18%, rgba(255,255,255,0.7), rgba(255,255,255,0) 70%)",
+              "radial-gradient(40% 34% at 85% 14%, rgba(184, 197, 214, 0.45), rgba(184, 197, 214, 0) 72%)",
+              "radial-gradient(52% 44% at 80% 78%, rgba(148, 163, 184, 0.35), rgba(148, 163, 184, 0) 74%)",
+              "radial-gradient(36% 30% at 24% 78%, rgba(226, 232, 240, 0.8), rgba(226, 232, 240, 0) 78%)",
+              "linear-gradient(180deg, #e6e9ee 0%, #d7dce3 52%, #d1d7df 100%)",
+            ].join(","),
+          }}
+        />
+        <div className="absolute left-[-8rem] top-16 h-72 w-72 rounded-full bg-white/45 blur-3xl" />
+        <div className="absolute right-[-7rem] top-40 h-80 w-80 rounded-full bg-slate-300/35 blur-3xl" />
+        <div className="absolute bottom-12 left-1/3 h-72 w-72 rounded-full bg-slate-100/55 blur-3xl" />
+        <div
+          className="absolute inset-0 opacity-40"
+          style={{
+            backgroundImage: [
+              "linear-gradient(rgba(255,255,255,0.22) 1px, transparent 1px)",
+              "linear-gradient(90deg, rgba(255,255,255,0.22) 1px, transparent 1px)",
+            ].join(","),
+            backgroundSize: "42px 42px, 42px 42px",
+          }}
+        />
+        <div
+          className="absolute inset-0 mix-blend-overlay opacity-[0.08]"
+          style={{
+            backgroundImage: [
+              "radial-gradient(circle, rgba(15,23,42,0.85) 0.7px, transparent 0.9px)",
+              "radial-gradient(circle, rgba(255,255,255,0.95) 0.6px, transparent 0.8px)",
+              "radial-gradient(circle, rgba(100,116,139,0.6) 0.5px, transparent 0.7px)",
+            ].join(","),
+            backgroundPosition: "0 0, 1.5px 1.5px, 3px 2px",
+            backgroundSize: "4px 4px, 5px 5px, 6px 6px",
+          }}
+        />
+        <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,transparent_48%,rgba(15,23,42,0.08)_100%)]" />
       </div>
 
       <section className="relative z-10 mx-auto max-w-6xl">

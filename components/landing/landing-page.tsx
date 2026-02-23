@@ -1,7 +1,8 @@
 ﻿"use client";
 
 import Link from "next/link";
-import { useEffect, useState } from "react";
+import Script from "next/script";
+import { createElement, useEffect, useState } from "react";
 
 import { PolyformLogoBadge } from "@/components/brand/polyform-logo";
 import { SUPPORTED_LANGUAGES } from "@/lib/defaults";
@@ -114,6 +115,16 @@ export function LandingPage(): JSX.Element {
   const [language, setLanguage] = useState("en");
   const [copyByLanguage, setCopyByLanguage] = useState<Record<string, LandingCopy>>({ en: DEFAULT_LANDING_COPY });
   const copy = copyByLanguage[language] ?? DEFAULT_LANDING_COPY;
+  const whyCards = [
+    { title: copy.whyCard1Title, body: copy.whyCard1Body },
+    { title: copy.whyCard2Title, body: copy.whyCard2Body },
+    { title: copy.whyCard3Title, body: copy.whyCard3Body },
+  ];
+  const lingoPills = [copy.lingoPill1, copy.lingoPill2, copy.lingoPill3, copy.lingoPill4];
+  const glassPanelClass =
+    "rounded-[28px] border border-white/60 bg-white/30 shadow-[0_20px_48px_rgba(15,23,42,0.10),inset_0_1px_0_rgba(255,255,255,0.6)] backdrop-blur-2xl";
+  const glassTileClass =
+    "rounded-2xl border border-white/60 bg-white/38 shadow-[0_12px_28px_rgba(15,23,42,0.08),inset_0_1px_0_rgba(255,255,255,0.5)] backdrop-blur-xl";
 
   useEffect(() => {
     const fromStorage = window.localStorage.getItem("polyform-landing-language");
@@ -154,192 +165,267 @@ export function LandingPage(): JSX.Element {
   }, [copyByLanguage, language]);
 
   return (
-    <main className="relative min-h-screen overflow-x-hidden bg-[#ead8c6] px-6 pb-16 pt-6 md:px-10">
+    <main className="relative min-h-screen overflow-x-hidden bg-[#d9dde2] px-4 pb-16 pt-4 text-slate-900 md:px-8">
       <div aria-hidden className="pointer-events-none absolute inset-0">
         <div
           className="absolute inset-0"
           style={{
             background: [
-              "radial-gradient(55% 55% at 45% 36%, rgba(255, 112, 45, 0.92), rgba(255, 112, 45, 0) 70%)",
-              "radial-gradient(42% 42% at 30% 78%, rgba(18, 86, 198, 0.92), rgba(18, 86, 198, 0) 72%)",
-              "radial-gradient(35% 35% at 44% 58%, rgba(255, 70, 35, 0.5), rgba(255, 70, 35, 0) 76%)",
-              "linear-gradient(90deg, rgba(124, 177, 155, 0.55) 0%, rgba(124, 177, 155, 0) 10%)",
-              "linear-gradient(180deg, #e7d4bf 0%, #ecd8c3 100%)",
+              "radial-gradient(48% 42% at 18% 18%, rgba(255,255,255,0.7), rgba(255,255,255,0) 70%)",
+              "radial-gradient(40% 34% at 85% 14%, rgba(184, 197, 214, 0.45), rgba(184, 197, 214, 0) 72%)",
+              "radial-gradient(52% 44% at 80% 78%, rgba(148, 163, 184, 0.35), rgba(148, 163, 184, 0) 74%)",
+              "radial-gradient(36% 30% at 24% 78%, rgba(226, 232, 240, 0.8), rgba(226, 232, 240, 0) 78%)",
+              "linear-gradient(180deg, #e6e9ee 0%, #d7dce3 52%, #d1d7df 100%)",
             ].join(","),
           }}
         />
-
-        <svg className="absolute inset-0 h-full w-full" viewBox="0 0 100 100" preserveAspectRatio="none">
-          <g stroke="#101010" strokeWidth="0.12" fill="none" opacity="0.95">
-            <line x1="5.5" y1="0" x2="5.5" y2="100" />
-            <line x1="96.4" y1="0" x2="96.4" y2="100" />
-            <path d="M27.5 0 C27.5 26, 27.5 45, 0 56" />
-            <path d="M64 0 C64 30, 64 52, 96.4 56" />
-            <path d="M100 38 C82 38, 83 60, 76 67" />
-            <line x1="84.3" y1="67" x2="84.3" y2="100" />
-          </g>
-
-          <g fill="#101010" opacity="0.95">
-            <circle cx="26.8" cy="9.6" r="1.1" />
-            <circle cx="5.5" cy="38" r="0.9" />
-            <circle cx="84.3" cy="67.2" r="1.1" />
-            <circle cx="96.4" cy="26.7" r="0.9" />
-          </g>
-
-          <g fill="#101010">
-            {Array.from({ length: 8 }).map((_, row) =>
-              Array.from({ length: 8 }).map((__, col) => (
-                <circle key={`${row}-${col}`} cx={75 + col * 2.35} cy={6 + row * 2.35} r="0.23" />
-              )),
-            )}
-          </g>
-
-          <g stroke="#f9f9f9" strokeWidth="0.2">
-            <line x1="31.3" y1="23.2" x2="31.3" y2="28.2" />
-            <line x1="28.8" y1="25.7" x2="33.8" y2="25.7" />
-            <line x1="88.5" y1="58.4" x2="88.5" y2="63.4" />
-            <line x1="86" y1="60.9" x2="91" y2="60.9" />
-          </g>
-
-          <g stroke="#ffffff" strokeWidth="0.15" strokeLinecap="round" opacity="0.85">
-            {Array.from({ length: 10 }).map((_, i) => {
-              const start = 8 + i * 1.25;
-              return <line key={start} x1={start} y1="89.2" x2={start + 0.75} y2="86.8" />;
-            })}
-          </g>
-
-          <g stroke="#111" strokeWidth="0.15" opacity="0.9">
-            <line x1="20.5" y1="17" x2="20.5" y2="19.6" />
-            <line x1="19.2" y1="18.3" x2="21.8" y2="18.3" />
-            <line x1="82" y1="59.2" x2="82" y2="61.8" />
-            <line x1="80.7" y1="60.5" x2="83.3" y2="60.5" />
-          </g>
-
-          <g stroke="#050505" strokeWidth="0.18" opacity="0.95" transform="translate(14.6,67.5) scale(0.58)">
-            {Array.from({ length: 24 }).map((_, i) => {
-              const angle = (i * Math.PI * 2) / 24;
-              const x2 = Math.cos(angle) * 6.5;
-              const y2 = Math.sin(angle) * 6.5;
-              return <line key={i} x1="0" y1="0" x2={x2} y2={y2} />;
-            })}
-            <circle cx="0" cy="0" r="1.5" fill="#050505" />
-          </g>
-        </svg>
+        <div className="absolute left-[-8rem] top-16 h-72 w-72 rounded-full bg-white/45 blur-3xl" />
+        <div className="absolute right-[-7rem] top-40 h-80 w-80 rounded-full bg-slate-300/35 blur-3xl" />
+        <div className="absolute bottom-12 left-1/3 h-72 w-72 rounded-full bg-slate-100/55 blur-3xl" />
+        <div
+          className="absolute inset-0 opacity-40"
+          style={{
+            backgroundImage: [
+              "linear-gradient(rgba(255,255,255,0.22) 1px, transparent 1px)",
+              "linear-gradient(90deg, rgba(255,255,255,0.22) 1px, transparent 1px)",
+            ].join(","),
+            backgroundSize: "42px 42px, 42px 42px",
+          }}
+        />
+        <div
+          className="absolute inset-0 mix-blend-overlay opacity-[0.08]"
+          style={{
+            backgroundImage: [
+              "radial-gradient(circle, rgba(15,23,42,0.85) 0.7px, transparent 0.9px)",
+              "radial-gradient(circle, rgba(255,255,255,0.95) 0.6px, transparent 0.8px)",
+              "radial-gradient(circle, rgba(100,116,139,0.6) 0.5px, transparent 0.7px)",
+            ].join(","),
+            backgroundPosition: "0 0, 1.5px 1.5px, 3px 2px",
+            backgroundSize: "4px 4px, 5px 5px, 6px 6px",
+          }}
+        />
+        <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,transparent_48%,rgba(15,23,42,0.08)_100%)]" />
       </div>
 
-      <div className="relative z-10 pt-24">
-      <header className="fixed left-1/2 top-4 z-50 flex w-[calc(100%-3rem)] max-w-6xl -translate-x-1/2 items-center justify-between rounded-[32px] bg-white/26 px-6 py-3 text-slate-900 shadow-[0_18px_40px_rgba(0,0,0,0.14),inset_0_1px_0_rgba(255,255,255,0.55)] backdrop-blur-2xl md:w-[calc(100%-5rem)]">
-        <div className="flex items-center gap-3">
-          <PolyformLogoBadge className="h-9 w-9 rounded-xl bg-white/85" markClassName="h-6 w-6 text-[#2f3338]" title="Polyform logo" />
-          <span className="text-lg font-semibold">Polyform</span>
-        </div>
-        <nav className="hidden items-center gap-8 text-sm text-slate-700 md:flex">
-          <Link href="/product" className="transition hover:text-slate-900">
-            {copy.navProduct}
-          </Link>
-          <Link href="/architecture" className="transition hover:text-slate-900">
-            {copy.navArchitecture}
-          </Link>
-          <Link href="/demo" className="transition hover:text-slate-900">
-            {copy.navDemo}
-          </Link>
-        </nav>
-        <div className="flex items-center gap-2">
-          <select
-            value={language}
-            onChange={(event) => setLanguage(event.target.value)}
-            className="rounded-full border border-slate-200 bg-white/90 px-3 py-2 text-xs font-medium text-slate-700 outline-none"
-            aria-label="Select language"
-          >
-            {SUPPORTED_LANGUAGES.map((lang) => (
-              <option key={lang.code} value={lang.code}>
-                {lang.label}
-              </option>
-            ))}
-          </select>
-          <Link href="/app" className="rounded-lg border border-slate-200 bg-white px-4 py-2 text-sm font-medium text-slate-800 backdrop-blur hover:bg-slate-50">
-            {copy.openApp}
-          </Link>
-        </div>
-      </header>
-
-      <section className="mx-auto mt-16 flex max-w-6xl flex-col items-start gap-10">
-        <div className="max-w-2xl">
-          <div className="md:translate-x-60 md:translate-y-10">
-            <h1 className="text-5xl font-black leading-tight tracking-tight text-slate-900 md:text-7xl">
-              {copy.headingLine1}
-              <br />
-              {copy.headingLine2}
-              <br />
-              {copy.headingLine3}
-            </h1>
-            <p className="mt-6 max-w-xl text-lg text-slate-700">
-              {copy.subtitle}
-            </p>
-            <div className="mt-8 flex flex-wrap gap-3">
-              <Link href="/app" className="rounded-xl bg-blue-600 px-6 py-3 text-sm font-semibold text-white shadow-lg shadow-blue-200 transition hover:bg-blue-700">
-                {copy.startBuilding}
-              </Link>
-              <a
-                href="https://github.com/manoj7ar/polyform"
-                target="_blank"
-                rel="noreferrer"
-                className="rounded-xl border border-[var(--border)] bg-white px-6 py-3 text-sm font-semibold text-slate-700 hover:bg-slate-50"
-              >
-                {copy.openSource}
-              </a>
+      <div className="relative z-10 mx-auto max-w-6xl pt-20 md:pt-24">
+        <header
+          className={`fixed left-1/2 top-4 z-50 flex w-[calc(100%-2rem)] max-w-6xl -translate-x-1/2 items-center justify-between rounded-[26px] px-4 py-3 text-slate-900 md:w-[calc(100%-4rem)] md:px-6 ${glassPanelClass}`}
+        >
+          <div className="flex items-center gap-3">
+            <PolyformLogoBadge className="h-9 w-9 rounded-xl bg-white/80" markClassName="h-6 w-6 text-[#2f3338]" title="Polyform logo" />
+            <div className="leading-tight">
+              <span className="block text-base font-semibold tracking-tight">Polyform</span>
+              <span className="hidden text-[11px] text-slate-600 md:block">Multilingual workspace</span>
             </div>
           </div>
-        </div>
-      </section>
+          <nav className="hidden items-center gap-6 text-sm text-slate-700 md:flex">
+            <Link href="/product" className="rounded-full px-3 py-1.5 transition hover:bg-white/35 hover:text-slate-950">
+              {copy.navProduct}
+            </Link>
+            <Link href="/architecture" className="rounded-full px-3 py-1.5 transition hover:bg-white/35 hover:text-slate-950">
+              {copy.navArchitecture}
+            </Link>
+            <Link href="/demo" className="rounded-full px-3 py-1.5 transition hover:bg-white/35 hover:text-slate-950">
+              {copy.navDemo}
+            </Link>
+          </nav>
+          <div className="flex items-center gap-2">
+            <select
+              value={language}
+              onChange={(event) => setLanguage(event.target.value)}
+              className="rounded-full border border-white/70 bg-white/60 px-3 py-2 text-xs font-medium text-slate-700 shadow-[inset_0_1px_0_rgba(255,255,255,0.75)] outline-none backdrop-blur-xl"
+              aria-label="Select language"
+            >
+              {SUPPORTED_LANGUAGES.map((lang) => (
+                <option key={lang.code} value={lang.code}>
+                  {lang.label}
+                </option>
+              ))}
+            </select>
+            <Link
+              href="/app"
+              className="rounded-xl border border-white/75 bg-white/65 px-4 py-2 text-sm font-medium text-slate-800 shadow-[0_8px_18px_rgba(15,23,42,0.06)] backdrop-blur-xl transition hover:bg-white/80"
+            >
+              {copy.openApp}
+            </Link>
+          </div>
+        </header>
 
-      <section className="mx-auto mt-36 max-w-6xl">
-        <h2 className="text-3xl font-black tracking-tight text-slate-900 md:text-4xl">{copy.whyTitle}</h2>
-        <div className="mt-6 grid gap-4 md:grid-cols-3">
-          <article className="rounded-3xl border border-white/50 bg-white/65 p-6 shadow-[0_14px_28px_rgba(0,0,0,0.08)] backdrop-blur-xl">
-            <h3 className="text-lg font-semibold text-slate-900">{copy.whyCard1Title}</h3>
-            <p className="mt-3 text-sm leading-7 text-slate-700">{copy.whyCard1Body}</p>
-          </article>
-          <article className="rounded-3xl border border-white/50 bg-white/65 p-6 shadow-[0_14px_28px_rgba(0,0,0,0.08)] backdrop-blur-xl">
-            <h3 className="text-lg font-semibold text-slate-900">{copy.whyCard2Title}</h3>
-            <p className="mt-3 text-sm leading-7 text-slate-700">{copy.whyCard2Body}</p>
-          </article>
-          <article className="rounded-3xl border border-white/50 bg-white/65 p-6 shadow-[0_14px_28px_rgba(0,0,0,0.08)] backdrop-blur-xl">
-            <h3 className="text-lg font-semibold text-slate-900">{copy.whyCard3Title}</h3>
-            <p className="mt-3 text-sm leading-7 text-slate-700">{copy.whyCard3Body}</p>
-          </article>
-        </div>
-      </section>
+        <section className="mt-8 grid gap-6 lg:grid-cols-[minmax(0,1.15fr)_minmax(0,0.85fr)]">
+          <div className="space-y-6">
+            <div className={`${glassPanelClass} relative overflow-hidden p-7 md:p-10`}>
+              <div className="absolute inset-x-0 top-0 h-28 bg-gradient-to-b from-white/40 to-transparent" />
+              <div className="absolute -right-10 top-10 h-36 w-36 rounded-full bg-white/55 blur-3xl" />
+              <div className="relative">
+                <span className="inline-flex rounded-full border border-white/70 bg-white/55 px-4 py-1.5 text-xs font-medium tracking-wide text-slate-700 shadow-[inset_0_1px_0_rgba(255,255,255,0.75)] backdrop-blur-xl">
+                  Realtime multilingual collaboration
+                </span>
+                <h1 className="mt-6 text-4xl font-black leading-tight tracking-tight text-slate-900 md:text-6xl lg:text-7xl">
+                  {copy.headingLine1}
+                  <br />
+                  {copy.headingLine2}
+                  <br />
+                  {copy.headingLine3}
+                </h1>
+                <p className="mt-5 max-w-2xl text-base leading-7 text-slate-700 md:text-lg">
+                  {copy.subtitle}
+                </p>
+                <div className="mt-8 flex flex-wrap gap-3">
+                  <Link
+                    href="/app"
+                    className="inline-flex items-center justify-center rounded-xl border border-slate-900/80 bg-slate-900 px-6 py-3 text-sm font-semibold text-white shadow-[0_12px_26px_rgba(15,23,42,0.22)] transition hover:bg-slate-800"
+                  >
+                    {copy.startBuilding}
+                  </Link>
+                  <a
+                    href="https://github.com/manoj7ar/polyform"
+                    target="_blank"
+                    rel="noreferrer"
+                    className="inline-flex items-center justify-center rounded-xl border border-white/75 bg-white/55 px-6 py-3 text-sm font-semibold text-slate-800 shadow-[inset_0_1px_0_rgba(255,255,255,0.8)] backdrop-blur-xl transition hover:bg-white/75"
+                  >
+                    {copy.openSource}
+                  </a>
+                </div>
+                <div className="mt-8 grid gap-3 sm:grid-cols-3">
+                  <div className={`${glassTileClass} p-4`}>
+                    <p className="text-[11px] font-medium uppercase tracking-[0.14em] text-slate-500">Language-first</p>
+                    <p className="mt-2 text-sm font-semibold leading-5 text-slate-800">{copy.whyCard1Title}</p>
+                  </div>
+                  <div className={`${glassTileClass} p-4`}>
+                    <p className="text-[11px] font-medium uppercase tracking-[0.14em] text-slate-500">Single source</p>
+                    <p className="mt-2 text-sm font-semibold leading-5 text-slate-800">{copy.whyCard2Title}</p>
+                  </div>
+                  <div className={`${glassTileClass} p-4`}>
+                    <p className="text-[11px] font-medium uppercase tracking-[0.14em] text-slate-500">Fast sharing</p>
+                    <p className="mt-2 text-sm font-semibold leading-5 text-slate-800">{copy.whyCard3Title}</p>
+                  </div>
+                </div>
+              </div>
+            </div>
 
-      <section className="mx-auto mt-10 max-w-6xl rounded-[32px] bg-[#111827]/90 p-8 shadow-[0_24px_48px_rgba(0,0,0,0.28)] md:p-10">
-        <h2 className="text-2xl font-bold text-white md:text-3xl">{copy.lingoTitle}</h2>
-        <p className="mt-4 max-w-4xl text-sm leading-7 text-slate-200 md:text-base">{copy.lingoBody}</p>
-        <div className="mt-6 flex flex-wrap gap-2">
-          <span className="rounded-full border border-white/25 bg-white/10 px-3 py-1 text-xs text-sky-100">{copy.lingoPill1}</span>
-          <span className="rounded-full border border-white/25 bg-white/10 px-3 py-1 text-xs text-sky-100">{copy.lingoPill2}</span>
-          <span className="rounded-full border border-white/25 bg-white/10 px-3 py-1 text-xs text-sky-100">{copy.lingoPill3}</span>
-          <span className="rounded-full border border-white/25 bg-white/10 px-3 py-1 text-xs text-sky-100">{copy.lingoPill4}</span>
-        </div>
-      </section>
+            <div className={`${glassPanelClass} p-6 md:p-7`}>
+              <div className="flex flex-wrap items-center justify-between gap-3">
+                <div>
+                  <p className="text-xs font-medium uppercase tracking-[0.16em] text-slate-500">Interface localization</p>
+                  <h2 className="mt-2 text-xl font-semibold tracking-tight text-slate-900 md:text-2xl">{copy.lingoTitle}</h2>
+                </div>
+                <span className="rounded-full border border-white/70 bg-white/55 px-3 py-1.5 text-xs font-medium text-slate-700 backdrop-blur-xl">
+                  {SUPPORTED_LANGUAGES.length}+ UI locales
+                </span>
+              </div>
+              <p className="mt-4 text-sm leading-7 text-slate-700 md:text-base">{copy.lingoBody}</p>
+              <div className="mt-5 flex flex-wrap gap-2">
+                {lingoPills.map((pill) => (
+                  <span
+                    key={pill}
+                    className="rounded-full border border-white/65 bg-white/45 px-3 py-1.5 text-xs font-medium text-slate-700 shadow-[inset_0_1px_0_rgba(255,255,255,0.65)] backdrop-blur-xl"
+                  >
+                    {pill}
+                  </span>
+                ))}
+              </div>
+            </div>
+          </div>
 
-      <section className="mx-auto mt-10 max-w-6xl rounded-[32px] bg-white/58 p-8 shadow-[0_14px_30px_rgba(0,0,0,0.1)] backdrop-blur-xl md:p-10">
-        <h2 className="text-2xl font-bold text-slate-900 md:text-3xl">{copy.ctaTitle}</h2>
-        <p className="mt-4 text-sm leading-7 text-slate-700 md:text-base">{copy.ctaBody}</p>
-        <div className="mt-6">
-          <Link href="/app" className="inline-flex rounded-xl bg-blue-600 px-6 py-3 text-sm font-semibold text-white shadow-lg shadow-blue-200 transition hover:bg-blue-700">
-            {copy.ctaButton}
-          </Link>
-        </div>
-      </section>
+          <div className="space-y-6">
+            <div className={`${glassPanelClass} p-6 md:p-7`}>
+              <p className="text-xs font-medium uppercase tracking-[0.16em] text-slate-500">How it feels</p>
+              <h2 className="mt-2 text-2xl font-bold tracking-tight text-slate-900">{copy.whyTitle}</h2>
+              <div className="mt-5 space-y-3">
+                {whyCards.map((card, index) => (
+                  <article key={card.title} className={`${glassTileClass} p-4`}>
+                    <div className="flex items-start gap-3">
+                      <span className="mt-0.5 flex h-7 w-7 items-center justify-center rounded-full border border-white/70 bg-white/70 text-xs font-semibold text-slate-700">
+                        {String(index + 1).padStart(2, "0")}
+                      </span>
+                      <div>
+                        <h3 className="text-sm font-semibold text-slate-900">{card.title}</h3>
+                        <p className="mt-2 text-sm leading-6 text-slate-700">{card.body}</p>
+                      </div>
+                    </div>
+                  </article>
+                ))}
+              </div>
+            </div>
 
-      <footer className="mx-auto mt-12 flex max-w-6xl flex-col items-start justify-between gap-4 rounded-[28px] border border-white/45 bg-white/45 px-6 py-5 text-sm text-slate-700 shadow-[0_12px_24px_rgba(0,0,0,0.08)] backdrop-blur-xl md:flex-row md:items-center">
-        <div className="flex items-center gap-3">
-          <PolyformLogoBadge className="h-8 w-8 rounded-lg bg-white/85" markClassName="h-5 w-5 text-[#2f3338]" />
-          <span className="font-semibold text-slate-900">Polyform</span>
-        </div>
-        <span>{copy.footerTagline}</span>
-      </footer>
+            <div className={`${glassPanelClass} relative overflow-hidden p-6 md:p-7`}>
+              <div className="absolute inset-x-0 top-0 h-16 bg-gradient-to-b from-white/35 to-transparent" />
+              <div className="relative">
+                <p className="text-xs font-medium uppercase tracking-[0.16em] text-slate-500">Live workflow</p>
+                <h3 className="mt-2 text-xl font-semibold tracking-tight text-slate-900">Glass-first workspace preview</h3>
+                <p className="mt-3 text-sm leading-6 text-slate-700">
+                  Every key piece of information is surfaced in soft translucent panels so the page feels calmer, lighter, and easier to scan.
+                </p>
+                <div className="mt-5 grid grid-cols-2 gap-3">
+                  <div className={`${glassTileClass} p-4`}>
+                    <p className="text-[11px] uppercase tracking-[0.14em] text-slate-500">Theme</p>
+                    <p className="mt-2 text-sm font-semibold text-slate-800">Gray + grain</p>
+                  </div>
+                  <div className={`${glassTileClass} p-4`}>
+                    <p className="text-[11px] uppercase tracking-[0.14em] text-slate-500">Surface</p>
+                    <p className="mt-2 text-sm font-semibold text-slate-800">Glass cards</p>
+                  </div>
+                  <div className={`${glassTileClass} p-4`}>
+                    <p className="text-[11px] uppercase tracking-[0.14em] text-slate-500">Density</p>
+                    <p className="mt-2 text-sm font-semibold text-slate-800">Readable spacing</p>
+                  </div>
+                  <div className={`${glassTileClass} p-4`}>
+                    <p className="text-[11px] uppercase tracking-[0.14em] text-slate-500">Focus</p>
+                    <p className="mt-2 text-sm font-semibold text-slate-800">Clear CTAs</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <section className={`mt-6 ${glassPanelClass} p-6 md:p-8`}>
+          <div className="grid gap-6 md:grid-cols-[minmax(0,1fr)_auto] md:items-center">
+            <div>
+              <p className="text-xs font-medium uppercase tracking-[0.16em] text-slate-500">Launch a shared space</p>
+              <h2 className="mt-2 text-2xl font-bold tracking-tight text-slate-900 md:text-3xl">{copy.ctaTitle}</h2>
+              <p className="mt-4 text-sm leading-7 text-slate-700 md:text-base">{copy.ctaBody}</p>
+              <div className="mt-5 flex flex-wrap gap-2">
+                <span className="rounded-full border border-white/65 bg-white/45 px-3 py-1.5 text-xs text-slate-700 backdrop-blur-xl">
+                  Realtime edits
+                </span>
+                <span className="rounded-full border border-white/65 bg-white/45 px-3 py-1.5 text-xs text-slate-700 backdrop-blur-xl">
+                  Shared links
+                </span>
+                <span className="rounded-full border border-white/65 bg-white/45 px-3 py-1.5 text-xs text-slate-700 backdrop-blur-xl">
+                  Multilingual rendering
+                </span>
+              </div>
+            </div>
+            <div className="md:justify-self-end">
+              <Link
+                href="/app"
+                className="inline-flex items-center justify-center rounded-xl border border-slate-900/80 bg-slate-900 px-6 py-3 text-sm font-semibold text-white shadow-[0_12px_26px_rgba(15,23,42,0.22)] transition hover:bg-slate-800"
+              >
+                {copy.ctaButton}
+              </Link>
+            </div>
+          </div>
+        </section>
+
+        <footer className={`mt-8 flex flex-col items-start justify-between gap-4 px-6 py-5 text-sm text-slate-700 md:flex-row md:items-center ${glassPanelClass}`}>
+          <div className="flex items-center gap-3">
+            <PolyformLogoBadge className="h-8 w-8 rounded-lg bg-white/80" markClassName="h-5 w-5 text-[#2f3338]" />
+            <span className="font-semibold text-slate-900">Polyform</span>
+          </div>
+          <span>{copy.footerTagline}</span>
+        </footer>
       </div>
+      <Script src="https://unpkg.com/@elevenlabs/convai-widget-embed" strategy="afterInteractive" />
+      {createElement("elevenlabs-convai", {
+        "agent-id": "agent_0201kj518ss9fpqstqced05xe7be",
+        style: {
+          position: "fixed",
+          right: "0",
+          bottom: "0",
+          zIndex: 80,
+        },
+      })}
     </main>
   );
 }
