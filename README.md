@@ -7,6 +7,8 @@
 
 Polyform is a real-time multilingual collaboration app built with Next.js, Supabase Realtime/Postgres, lingo.dev, and Gemini. The core design is source-first: collaborators edit a single canonical document source, while each participant can read the same document in their own language through live, versioned translations.
 
+YouTube video for the hackathon: https://www.tella.tv/video/tjrwygrs-video-3jxf
+
 This repository currently implements a hackathon-grade but production-leaning system with:
 - a polished landing page and product/demo/architecture pages,
 - an `/app` dashboard for creating and managing spaces,
