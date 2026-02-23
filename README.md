@@ -689,15 +689,6 @@ It is **not production-secure** as-is for multi-tenant/public deployment.
 - Check browser network connectivity / websocket stability
 - Remember that translations are versioned and stale translations are intentionally ignored
 
-## Known Limits
-- Collaborative block type is currently `document` only.
-- No production auth / authorization (see Security section).
-- View mode is primarily a client UX mode in the current implementation; server-side write protection is not complete yet.
-- Translation state is in-memory on clients (DB stores canonical source, not per-language rendered copies).
-- Presence cleanup/expiry is minimal in current client logic.
-- Realtime quality depends on client connection health and Supabase channel behavior.
-- Snapshot payloads store full JSON payloads; there is no diff-based snapshot compression yet.
-
 ## Roadmap / Recommended Next Steps
 ### High-impact product/system improvements
 1. Implement Supabase Auth + RLS + server authorization checks.
