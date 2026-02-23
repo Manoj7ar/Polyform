@@ -1,5 +1,7 @@
 ﻿"use client";
 
+import { useState } from "react";
+
 interface ShareModalProps {
   isOpen: boolean;
   onClose: () => void;
@@ -17,10 +19,33 @@ interface ShareModalProps {
 }
 
 function ShareRow({ label, value, generating }: { label: string; value: string | null; generating: string }): JSX.Element {
+  const [copied, setCopied] = useState(false);
+
+  async function handleCopy(): Promise<void> {
+    if (!value) return;
+
+    try {
+      await navigator.clipboard.writeText(value);
+      setCopied(true);
+      window.setTimeout(() => setCopied(false), 1400);
+    } catch {
+      setCopied(false);
+    }
+  }
+
   return (
     <div className="space-y-2 rounded-lg border border-slate-200 p-3">
       <p className="text-xs font-semibold uppercase tracking-wide text-slate-500">{label}</p>
       <p className="break-all rounded bg-slate-50 px-2 py-1 text-xs text-slate-700">{value ?? generating}</p>
+      <button
+        type="button"
+        onClick={() => void handleCopy()}
+        disabled={!value}
+        aria-label={`Copy ${label} link`}
+        className="rounded-md border border-slate-200 px-2.5 py-1 text-xs font-medium text-slate-600 transition hover:bg-slate-50 disabled:cursor-not-allowed disabled:opacity-50"
+      >
+        {copied ? "Copied" : "Copy"}
+      </button>
     </div>
   );
 }
@@ -55,4 +80,3 @@ export function ShareModal({ isOpen, onClose, editLink, viewLink, snapshotLink, 
     </div>
   );
 }
-
